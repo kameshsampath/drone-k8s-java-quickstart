@@ -2,12 +2,20 @@
 kind: pipeline
 type: docker
 name: default
-
 platform:
   os: linux
   arch: arm64
 
+clone:
+  disable: true
+
 steps:
+  - name: clone from local gitea
+    image: alpine/git
+    command:
+      - git clone http://gitea-127.0.0.1.sslip.io:3000/demo/drone-java-quickstart
+      - git checkout $DRONE_COMMIT
+
   - name: ensure nexus is available
     image: alpine
     pull: if-not-exists
@@ -36,13 +44,6 @@ steps:
         - install
       maven_modules:
         - springboot
-
-host_aliases:
-  # kubectl get svc gitea-http -ojsonpath='{.spec.clusterIP}'
-  - ip: 10.96.181.94
-    hostnames:
-      - "gitea-127.0.0.1.sslip.io"
-
 trigger:
   branch:
     - main

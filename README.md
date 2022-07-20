@@ -62,14 +62,6 @@ kubectl rollout status deploy/nexus --timeout=180s
 
 ## Building
 
-### Only for Kind
-
-Update the host aliases on to have the cluster ip of `gitea-http` service,
-
-```shell
-export GITEA_HTTP_CLUSTER_IP=$(kubectl get svc gitea-http -ojsonpath='{.spec.clusterIP}')
-yq -i '.host_aliases[0].ip |= env(GITEA_HTTP_CLUSTER_IP)' .drone.yml
-```
 
 ### Add Steps to build application
 
