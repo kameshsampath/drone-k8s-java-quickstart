@@ -16,7 +16,7 @@ steps:
   - name: clone from local gitea
     image: alpine/git
     commands:
-      - git clone http://gitea-127.0.0.1.sslip.io:3000/demo/drone-java-quickstart.git
+      - git clone http://gitea-127.0.0.1.sslip.io:3000/demo/drone-java-quickstart.git .
       - git checkout $DRONE_COMMIT
     extra_hosts: *host_aliases
 
