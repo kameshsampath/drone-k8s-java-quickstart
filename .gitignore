@@ -38,3 +38,4 @@ release.properties
 .m2
 .drone.yml.local
 .env*
+k8s/drone-runner-docker/all.yaml

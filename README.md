@@ -42,6 +42,7 @@ helm upgrade --install --devel \
   drone-runner-docker drone/drone-runner-docker \
   --namespace=drone \
   --values $QUICKSTART_HOME/helm_vars/drone-runner-docker/values.yaml \
+  --post-renderer  $QUICKSTART_HOME/k8s/drone-runner-docker/kustomize \
   --wait
 ```
 
