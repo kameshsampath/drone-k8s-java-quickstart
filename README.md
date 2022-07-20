@@ -62,6 +62,9 @@ kubectl rollout status deploy/nexus --timeout=180s
 
 ## Building
 
+```shell
+kubectl set env -n drone deployments.apps/drone DRONE_USER_CREATE=username:demo,admin:true
+```
 
 ### Add Steps to build application
 
