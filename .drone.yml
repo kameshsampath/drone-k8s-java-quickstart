@@ -27,6 +27,7 @@ steps:
       - apk update
       - apk add curl bash
       - if [ "$(curl -s -w '%{http_code}' http://nexus.default:8081/nexus )" = "302" ]; then exit 0; else exit 1; fi
+
   - name: test-java-application
     image: docker.io/kameshsampath/drone-java-maven-plugin:v1.0.0
     pull: if-not-exists
@@ -37,6 +38,8 @@ steps:
         - test
       maven_modules:
         - springboot
+    user: dev
+
   - name: build-java-application
     image: docker.io/kameshsampath/drone-java-maven-plugin:v1.0.0
     pull: if-not-exists
@@ -48,6 +51,8 @@ steps:
         - install
       maven_modules:
         - springboot
+    user: dev
+
 trigger:
   branch:
     - main
