@@ -43,4 +43,4 @@ host_aliases:
 
 trigger:
   branch:
-    - k8s
+    - main
