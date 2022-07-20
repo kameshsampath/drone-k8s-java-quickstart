@@ -1,0 +1,23 @@
+namespace: default
+
+commonLabels:
+  app: nexus3
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+resources:
+  - sa.yaml
+  - service.yaml
+  - pvc.yaml
+  - deployment.yaml
+
+replacements:
+  - source:
+      kind: ServiceAccount
+      fieldPath: metadata.name
+    targets:
+      - select:
+          kind: Deployment
+        fieldPaths:
+          - spec.template.spec.serviceAccountName

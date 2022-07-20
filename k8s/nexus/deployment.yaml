@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus
+spec:
+  selector:
+    matchLabels:
+      app: nexus
+  template:
+    metadata:
+      labels:
+        app: nexus
+    spec:
+      securityContext:
+        runAsUser: 200
+        runAsGroup: 200
+        fsGroup: 200
+      containers:
+        - name: nexus
+          image: sonatype/nexus:2.15.1-02
+          env:
+            - name: MAX_HEAP
+              value: "1500m"
+          ports:
+            - containerPort: 8081
+              name: 8081-http
+          livenessProbe:
+            httpGet:
+              path: /nexus
+              port: 8081
+          readinessProbe:
+            httpGet:
+              path: /nexus
+              port: 8081
+          startupProbe:
+            httpGet:
+              path: /nexus
+              port: 8081
+            failureThreshold: 18
+            periodSeconds: 10
+          volumeMounts:
+            - name: nexus-data
+              mountPath: /sonatype-work
+          resources:
+            limits:
+              memory: "1500Mi"
+            requests:
+              memory: "750Mi"
+          securityContext:
+            allowPrivilegeEscalation: false
+      serviceAccountName: default
+      volumes:
+        - name: nexus-data
+          persistentVolumeClaim:
+            claimName: nexus-data

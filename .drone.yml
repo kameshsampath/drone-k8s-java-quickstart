@@ -1,0 +1,46 @@
+---
+kind: pipeline
+type: kubernetes
+name: default
+
+steps:
+  - name: ensure nexus is available
+    image: alpine
+    pull: if-not-exists
+    commands:
+      - apk update
+      - apk add curl bash
+      - if [ "$(curl -s -w '%{http_code}' http://nexus:8081/nexus )" = "302" ]; then exit 0; else exit 1; fi
+  - name: test-java-application
+    image: docker.io/kameshsampath/drone-java-maven-plugin:v1.0.0
+    pull: if-not-exists
+    settings:
+      maven_mirror_url: http://nexus:8081/nexus/content/groups/public/
+      goals:
+        - B
+        - clean
+        - test
+      maven_modules:
+        - springboot
+  - name: build-java-application
+    image: docker.io/kameshsampath/drone-java-maven-plugin:v1.0.0
+    pull: if-not-exists
+    settings:
+      maven_mirror_url: http://nexus:8081/nexus/content/groups/public/
+      goals:
+        - B
+        - clean
+        - -DskipTests
+        - install
+      maven_modules:
+        - springboot
+
+host_aliases:
+  # kubectl get svc gitea-http -ojsonpath='{.spec.clusterIP}'
+  - ip: 10.96.181.94
+    hostnames:
+      - "gitea-127.0.0.1.sslip.io"
+
+trigger:
+  branch:
+    - k8s
