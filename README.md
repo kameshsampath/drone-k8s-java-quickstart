@@ -34,6 +34,17 @@ Follow my blog post [Yours Kindly Drone](https://kubesimplify.com/yours-kindly-d
 
 ## Add Drone Quickstart to Gitea
 
+
+## Deploy Drone Docker Runner(Devel)
+
+```shell
+helm upgrade --install --devel \
+  drone-runner-docker drone/drone-runner-docker \
+  --namespace=drone \
+  --values $QUICKSTART_HOME/helm_vars/drone-runner-docker/values.yaml \
+  --wait
+```
+
 ## Deploy Nexus
 
 The Java builds will use [Sonatype Nexus](https://www.sonatype.com/products/nexus-repository) as the [Apache Maven](https://maven.apache.org/) artifacts repository manager.
