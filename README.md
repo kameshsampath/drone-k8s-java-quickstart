@@ -122,6 +122,6 @@ Update the `.drone.yml` with the following additional steps that allows you to b
   image: plugins/docker
   settings:
     insecure: false
-    repo: kind-registry:5000/example/drone-java-quickstart
+    repo: localhost:5001/example/drone-java-quickstart
     context: /drone/src/springboot
 ```
