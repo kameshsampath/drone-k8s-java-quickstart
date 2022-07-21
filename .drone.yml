@@ -10,7 +10,9 @@ clone:
   disable: true
 
 host_aliases: &host_aliases
-  - 'gitea-127.0.0.1.sslip.io:10.96.181.94'
+  # update IP to match your local gitea-http
+  # kubectl get svc gitea-http -ojsonpath='{.spec.clusterIP}'
+  - "gitea-127.0.0.1.sslip.io:10.96.181.94"
 
 steps:
   - name: clone from local gitea
@@ -50,6 +52,13 @@ steps:
         - install
       maven_modules:
         - springboot
+
+  - name: build-image
+    image: plugins/docker
+    settings:
+      insecure: false
+      repo: kind-registry:5000/example/drone-java-quickstart
+      context: /drone/src/springboot
 
 trigger:
   branch:
