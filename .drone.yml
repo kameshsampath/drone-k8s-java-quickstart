@@ -59,7 +59,7 @@ steps:
       insecure: false
       # we use the local registry that was deployed while 
       # creating Kind cluster
-      repo: kind-registry:5000/example/drone-java-quickstart
+      repo: localhost:5001/example/drone-java-quickstart
       context: /drone/src/springboot
       dockerfile: /drone/src/springboot/Dockerfile
 
