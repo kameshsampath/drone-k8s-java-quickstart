@@ -34,18 +34,6 @@ Follow my blog post [Yours Kindly Drone](https://kubesimplify.com/yours-kindly-d
 
 ## Add Drone Quickstart to Gitea
 
-
-## Deploy Drone Docker Runner(Devel)
-
-```shell
-helm upgrade --install --devel \
-  drone-runner-docker drone/drone-runner-docker \
-  --namespace=drone \
-  --values $QUICKSTART_HOME/helm_vars/drone-runner-docker/values.yaml \
-  --post-renderer  $QUICKSTART_HOME/k8s/drone-runner-docker/kustomize \
-  --wait
-```
-
 ## Deploy Nexus
 
 The Java builds will use [Sonatype Nexus](https://www.sonatype.com/products/nexus-repository) as the [Apache Maven](https://maven.apache.org/) artifacts repository manager.
@@ -60,10 +48,43 @@ Wait for nexus to be ready,
 kubectl rollout status deploy/nexus --timeout=180s
 ```
 
-## Building
+## Configure Drone CLI
+
+Copy the settings **Example CLI Usage** from the drone account settings page <http://drone-127.0.0.1.sslip.io:8080/account>.
+
+For this quickstart settings running the command `drone info` should show the following output,
+
+```text
+User: demo
+Email: demo@example.com
+```
+
+### Repository Admin
+
+Ensure the Gitea `demo` user is added as Repository Admin in Drone to allow modifying the required settings.
 
 ```shell
-kubectl set env -n drone deployments.apps/drone DRONE_USER_CREATE=username:demo,admin:true
+drone user update demo --admin
+```
+
+Running the command `drone user admin info` should show the following output,
+
+```shell
+User: demo
+Email: demo@example.com
+Admin: true
+Active: true
+Machine: false
+```
+
+### Make Repository as Trusted
+
+To run drone in a trusted mode we need to mark the repository as **trusted**.
+
+Run the following command to mark the `drone-java-quickstart` as trusted,
+
+```shell
+drone repo update --trusted demo/drone-java-quickstart
 ```
 
 ### Add Steps to build application
@@ -94,19 +115,13 @@ Update the `.drone.yml` with the following additional steps that allows you to b
        - springboot
 ```
 
-### Add Step to Build Container Image
+### Add Step to Build the Container Image
 
 ```yaml
 - name: build-image
-  image: gcr.io/kaniko-project/executor:debug
-  commands:
-    - >
-      /kaniko/executor
-      --context /drone/src/$MAVEN_MODULE
-      --dockerfile $DOCKER_FILE 
-      --destination $DESTINATION_IMAGE
-  environment:
-     MAVEN_MODULE: springboot
-     DOCKER_FILE: Dockerfile
-     DESTINATION_IMAGE: localhost:5001/example/drone-java-k8s-quickstart
+  image: plugins/docker
+  settings:
+    insecure: false
+    repo: kind-registry:5000/example/drone-java-quickstart
+    context: /drone/src/springboot
 ```
